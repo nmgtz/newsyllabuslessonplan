@@ -1001,18 +1001,18 @@ function buildAndDownloadPdf(filename, onSuccess) {
         const s = raw.trim();
         const iso = s.match(/^(\d{4})[\/\-\.](\d{1,2})[\/\-\.](\d{1,2})$/);
         if (iso) {
-            const dd = iso[3].padStart(2,'0');
-            const mm = iso[2].padStart(2,'0');
-            return `${dd}.${mm}.${iso[1]}`;
+            return `${iso[3].padStart(2,'0')}.${iso[2].padStart(2,'0')}.${iso[1]}`;
         }
         const dmy = s.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})$/);
         if (dmy) {
-            const dd = dmy[1].padStart(2,'0');
-            const mm = dmy[2].padStart(2,'0');
             const yy = dmy[3].length === 2 ? '20' + dmy[3] : dmy[3];
-            return `${dd}.${mm}.${yy}`;
+            return `${dmy[1].padStart(2,'0')}.${dmy[2].padStart(2,'0')}.${yy}`;
         }
         return s;
+    }
+
+    function lbl(raw) {
+        return raw.replace(/:+\s*$/, '').toUpperCase() + ' :';
     }
 
     const d = {
@@ -1104,7 +1104,7 @@ function buildAndDownloadPdf(filename, onSuccess) {
     let y = MT;
 
     const base = {
-        fontSize:  7.6,
+        fontSize:  8.5,
         font:      'helvetica',
         textColor: BLACK,
         fillColor: WHITE,
@@ -1137,9 +1137,9 @@ function buildAndDownloadPdf(filename, onSuccess) {
             3: { cellWidth: dCW[3], valign: 'bottom' },
         },
         body: [
-            [ d.lShule.toUpperCase()  + ' :', (d.school  || '').toUpperCase(), d.lTeacher.toUpperCase() + ' :', (d.teacher || '').toUpperCase() ],
-            [ d.lClass.toUpperCase()  + ' :', ((d.classVal + ' ' + d.stream).trim()).toUpperCase(), d.lSubject.toUpperCase() + ' :', (d.subject || '').toUpperCase() ],
-            [ d.lTime.toUpperCase()   + ' :', (d.time    || '').toUpperCase(), d.lDate.toUpperCase()   + ' :', (d.date    || '').toUpperCase() ],
+            [ lbl(d.lShule),   (d.school  || '').toUpperCase(), lbl(d.lTeacher), (d.teacher || '').toUpperCase() ],
+            [ lbl(d.lClass),   ((d.classVal + ' ' + d.stream).trim()).toUpperCase(), lbl(d.lSubject), (d.subject || '').toUpperCase() ],
+            [ lbl(d.lTime),    (d.time    || '').toUpperCase(), lbl(d.lDate),    (d.date    || '').toUpperCase() ],
         ],
         didDrawCell(data) {
             if (data.section === 'body' && (data.column.index === 1 || data.column.index === 3)) {
@@ -1195,14 +1195,14 @@ function buildAndDownloadPdf(filename, onSuccess) {
     });
     y = doc.lastAutoTable.finalY + 6;
 
-    const compLblW = 48;
+    const compLblW = 50;
     const compRows = [
-        [ d.lUjuzi.toUpperCase()     + ' :', d.sylbsMnObj ],
-        [ d.lLengoKuu.toUpperCase()  + ' :', d.sylbsCmp   ],
-        [ d.lMadaNdogo.toUpperCase() + ' :', d.sylbsSbtp  ],
-        [ d.lMahususi.toUpperCase()  + ' :', d.sylbsSpobj ],
-        [ d.lNukuu.toUpperCase()     + ' :', d.sylbsMts   ],
-        [ d.lRejea.toUpperCase()     + ' :', d.sylbsRfrs  ],
+        [ lbl(d.lUjuzi),     d.sylbsMnObj ],
+        [ lbl(d.lLengoKuu),  d.sylbsCmp   ],
+        [ lbl(d.lMadaNdogo), d.sylbsSbtp  ],
+        [ lbl(d.lMahususi),  d.sylbsSpobj ],
+        [ lbl(d.lNukuu),     d.sylbsMts   ],
+        [ lbl(d.lRejea),     d.sylbsRfrs  ],
     ];
 
     doc.autoTable({
@@ -1245,7 +1245,7 @@ function buildAndDownloadPdf(filename, onSuccess) {
     const REMARKS_H   = 10;
     const tableBottom = PH - MB - REMARKS_H;
     const availH      = tableBottom - y;
-    const HDR_H       = 9;
+    const HDR_H       = 10;
     const rowH        = (availH - HDR_H) / 4;
 
     const pCW = [28, 14, 52, 52, CW - 28 - 14 - 52 - 52];
@@ -1257,13 +1257,15 @@ function buildAndDownloadPdf(filename, onSuccess) {
         theme:      'grid',
         styles: {
             ...base,
-            cellPadding: { top: 2, bottom: 2, left: 2, right: 2 },
+            fontSize:  8.5,
+            cellPadding: { top: 2.5, bottom: 2.5, left: 2.5, right: 2.5 },
             valign:   'top',
             overflow: 'linebreak',
             lineWidth: 0.5,
         },
         headStyles: {
             ...base,
+            fontSize:  8.5,
             fontStyle: 'bold',
             halign:    'center',
             valign:    'middle',
@@ -1278,7 +1280,7 @@ function buildAndDownloadPdf(filename, onSuccess) {
             4: { cellWidth: pCW[4] },
         },
         head: [[
-            d.lHatua.toUpperCase(),
+            lbl(d.lHatua).replace(' :',''),
             d.lMudaDakika.toUpperCase(),
             d.lMwalimu.toUpperCase(),
             d.lMwanafunzi.toUpperCase(),
@@ -1300,18 +1302,17 @@ function buildAndDownloadPdf(filename, onSuccess) {
     const ry = PH - MB - 5;
 
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8);
+    doc.setFontSize(8.5);
     doc.setTextColor(...BLACK);
 
-    const cleanMaoni  = d.lMaoni.replace(/:+\s*$/, '').toUpperCase();
-    const remarkLabel = cleanMaoni + ' :';
+    const remarkLabel = lbl(d.lMaoni);
     doc.text(remarkLabel, ML, ry);
 
     const labelW  = doc.getTextWidth(remarkLabel) + 2;
     const remarkW = CW - labelW;
 
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(7.6);
+    doc.setFontSize(8.5);
     const lines = doc.splitTextToSize(d.remarkComm || '', remarkW);
     doc.text(lines, ML + labelW, ry);
 
