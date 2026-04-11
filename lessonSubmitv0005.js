@@ -978,6 +978,7 @@ function downloadDocument(onSuccess) {
         }, 150);
     });
 }
+
 function buildAndDownloadPdf(filename, onSuccess) {
 
     function t(id) {
@@ -1088,117 +1089,219 @@ function buildAndDownloadPdf(filename, onSuccess) {
     };
 
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
-    const PW  = 210;
-    const PH  = 297;
-    const ML  = 8;
-    const MR  = 8;
-    const MT  = 6;
-    const MB  = 8;
-    const CW  = PW - ML - MR;
+    const doc = new jsPDF({
+        orientation: 'portrait',
+        unit:        'mm',
+        format:      'a4',
+        compress:    false,
+        putOnlyUsedFonts: false,
+        floatPrecision: 16,
+    });
 
-    const BLACK = [0, 0, 0];
-    const WHITE = [255, 255, 255];
+    doc.setProperties({
+        title:    d.title || 'Lesson Plan',
+        subject:  'Lesson Plan Document',
+        author:   d.teacher || '',
+        keywords: 'lesson plan, education, teaching',
+        creator:  'Lesson Plan Generator',
+    });
 
-    const REMARKS_BLOCK_H = 16;
+    const SCALE   = 4;
+    const PW_PX   = Math.round(794  * SCALE);
+    const PH_PX   = Math.round(1123 * SCALE);
 
-    let y = MT;
+    const canvas  = document.createElement('canvas');
+    canvas.width  = PW_PX;
+    canvas.height = PH_PX;
+    const ctx     = canvas.getContext('2d');
 
-    const base = {
-        fontSize:  8.5,
-        font:      'helvetica',
-        textColor: BLACK,
-        fillColor: WHITE,
-        lineColor: BLACK,
-        lineWidth: 0.5,
-    };
+    ctx.imageSmoothingEnabled    = true;
+    ctx.imageSmoothingQuality    = 'high';
 
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(11.5);
-    doc.setTextColor(...BLACK);
-    doc.text(d.title.toUpperCase(), PW / 2, y + 5, { align: 'center' });
-    y += 12;
+    const MM2PX   = PW_PX / 210;
+    const PW      = 210;
+    const PH      = 297;
+    const ML      = 8;
+    const MR      = 8;
+    const MT      = 6;
+    const MB      = 8;
+    const CW      = PW - ML - MR;
 
-    const dCW = [28, 69, 34, CW - 28 - 69 - 34];
+    function mm(v)  { return v * MM2PX; }
+    function pt(v)  { return v * MM2PX * 0.352778; }
 
-    doc.autoTable({
-        startY:     y,
-        margin:     { left: ML, right: MR },
-        tableWidth: CW,
-        theme:      'plain',
-        styles: {
-            ...base,
-            cellPadding: { top: 1.2, bottom: 2, left: 1, right: 1 },
-            lineWidth: 0,
-        },
-        columnStyles: {
-            0: { fontStyle: 'bold', cellWidth: dCW[0], valign: 'bottom' },
-            1: { cellWidth: dCW[1], valign: 'bottom' },
-            2: { fontStyle: 'bold', cellWidth: dCW[2], valign: 'bottom' },
-            3: { cellWidth: dCW[3], valign: 'bottom' },
-        },
-        body: [
-            [ lbl(d.lShule),   (d.school  || '').toUpperCase(), lbl(d.lTeacher), (d.teacher || '').toUpperCase() ],
-            [ lbl(d.lClass),   ((d.classVal + ' ' + d.stream).trim()).toUpperCase(), lbl(d.lSubject), (d.subject || '').toUpperCase() ],
-            [ lbl(d.lTime),    (d.time    || '').toUpperCase(), lbl(d.lDate),    (d.date    || '').toUpperCase() ],
-        ],
-        didDrawCell(data) {
-            if (data.section === 'body' && (data.column.index === 1 || data.column.index === 3)) {
-                doc.setDrawColor(...BLACK);
-                doc.setLineWidth(0.5);
-                doc.setLineDashPattern([], 0);
-                doc.line(
-                    data.cell.x,
-                    data.cell.y + data.cell.height - 0.4,
-                    data.cell.x + data.cell.width,
-                    data.cell.y + data.cell.height - 0.4
-                );
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, PW_PX, PH_PX);
+
+    function setFont(weight, size) {
+        ctx.font        = `${weight} ${mm(size * 0.352778)}px Arial, Helvetica, sans-serif`;
+        ctx.fillStyle   = '#000000';
+        ctx.strokeStyle = '#000000';
+    }
+
+    function drawLine(x1, y1, x2, y2, lw) {
+        ctx.beginPath();
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth   = lw || mm(0.18);
+        ctx.moveTo(mm(x1), mm(y1));
+        ctx.lineTo(mm(x2), mm(y2));
+        ctx.stroke();
+    }
+
+    function drawRect(x, y, w, h, lw) {
+        ctx.beginPath();
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth   = lw || mm(0.18);
+        ctx.strokeRect(mm(x), mm(y), mm(w), mm(h));
+    }
+
+    function fillRect(x, y, w, h, color) {
+        ctx.fillStyle = color || '#ffffff';
+        ctx.fillRect(mm(x), mm(y), mm(w), mm(h));
+        ctx.fillStyle = '#000000';
+    }
+
+    function wrapText(text, maxW) {
+        if (!text) return [''];
+        const words = String(text).split(' ');
+        const lines = [];
+        let cur = '';
+        for (const w of words) {
+            const test = cur ? cur + ' ' + w : w;
+            if (ctx.measureText(test).width <= mm(maxW)) {
+                cur = test;
+            } else {
+                if (cur) lines.push(cur);
+                cur = w;
             }
-        },
-    });
-    y = doc.lastAutoTable.finalY + 6;
+        }
+        if (cur) lines.push(cur);
+        return lines.length ? lines : [''];
+    }
 
-    doc.autoTable({
-        startY:     y,
-        margin:     { left: ML, right: MR },
-        tableWidth: CW,
-        theme:      'grid',
-        styles: {
-            ...base,
-            cellPadding: { top: 2, bottom: 2, left: 1, right: 1 },
-            halign:    'center',
-            valign:    'middle',
-            fontStyle: 'bold',
-        },
-        head: [
-            [{ content: d.lIdadi.toUpperCase(), colSpan: 6, styles: { ...base, fontStyle: 'bold', halign: 'center', fillColor: WHITE } }],
-            [
-                { content: d.lSajiliwa.toUpperCase(), colSpan: 3, styles: { ...base, fontStyle: 'bold', fillColor: WHITE } },
-                { content: d.lFika.toUpperCase(),     colSpan: 3, styles: { ...base, fontStyle: 'bold', fillColor: WHITE } },
-            ],
-            [
-                { content: d.lGirls.toUpperCase(),  styles: { ...base, fillColor: WHITE } },
-                { content: d.lBoys.toUpperCase(),   styles: { ...base, fillColor: WHITE } },
-                { content: d.lTotal.toUpperCase(),  styles: { ...base, fillColor: WHITE } },
-                { content: d.lGirls1.toUpperCase(), styles: { ...base, fillColor: WHITE } },
-                { content: d.lBoys1.toUpperCase(),  styles: { ...base, fillColor: WHITE } },
-                { content: d.lTotal1.toUpperCase(), styles: { ...base, fillColor: WHITE } },
-            ],
-        ],
-        body: [[
-            { content: d.flReg  || '', styles: { ...base, fontStyle: 'normal' } },
-            { content: d.mlReg  || '', styles: { ...base, fontStyle: 'normal' } },
-            { content: d.stRegt || '', styles: { ...base, fontStyle: 'normal' } },
-            { content: d.flPr   || '', styles: { ...base, fontStyle: 'normal' } },
-            { content: d.mlPr   || '', styles: { ...base, fontStyle: 'normal' } },
-            { content: d.stPrt  || '', styles: { ...base, fontStyle: 'normal' } },
-        ]],
+    function textCell(text, x, y, w, h, opts) {
+        const o        = opts || {};
+        const fSize    = o.fontSize  || 3.0;
+        const fWeight  = o.bold      ? 'bold' : 'normal';
+        const align    = o.align     || 'left';
+        const vAlign   = o.vAlign    || 'top';
+        const padL     = o.padL !== undefined ? o.padL : 1.2;
+        const padR     = o.padR !== undefined ? o.padR : 1.2;
+        const padT     = o.padT !== undefined ? o.padT : 1.2;
+
+        setFont(fWeight, fSize);
+
+        const lineH    = mm(fSize * 0.352778) * 1.45;
+        const innerW   = w - padL - padR;
+        const lines    = wrapText(text, innerW);
+        const totalTH  = lines.length * lineH;
+
+        let startY;
+        if (vAlign === 'middle') {
+            startY = mm(y) + (mm(h) - totalTH) / 2 + mm(fSize * 0.352778) * 0.85;
+        } else if (vAlign === 'bottom') {
+            startY = mm(y) + mm(h) - mm(padT) * 0.5 - (lines.length - 1) * lineH;
+        } else {
+            startY = mm(y) + mm(padT) + mm(fSize * 0.352778) * 0.85;
+        }
+
+        ctx.fillStyle   = '#000000';
+        ctx.textBaseline = 'alphabetic';
+
+        lines.forEach((line, i) => {
+            let drawX;
+            const cellInnerW = mm(w - padL - padR);
+            const textW      = ctx.measureText(line).width;
+            if (align === 'center') {
+                drawX = mm(x) + (mm(w) - textW) / 2;
+            } else if (align === 'right') {
+                drawX = mm(x) + mm(w) - mm(padR) - textW;
+            } else {
+                drawX = mm(x) + mm(padL);
+            }
+            ctx.fillText(line, drawX, startY + i * lineH);
+        });
+    }
+
+    function gridCell(text, x, y, w, h, opts, drawBorder) {
+        fillRect(x, y, w, h, '#ffffff');
+        textCell(text, x, y, w, h, opts);
+        if (drawBorder !== false) {
+            drawRect(x, y, w, h, mm(0.18));
+        }
+    }
+
+    let cy = MT;
+
+    setFont('bold', 4.0);
+    ctx.fillStyle    = '#000000';
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(d.title.toUpperCase(), mm(PW / 2), mm(cy + 4.5));
+    ctx.textAlign    = 'left';
+    cy += 11;
+
+    const dCols  = [28, 69, 34, CW - 28 - 69 - 34];
+    const dRows  = [
+        [ lbl(d.lShule),   (d.school  || '').toUpperCase(), lbl(d.lTeacher), (d.teacher || '').toUpperCase() ],
+        [ lbl(d.lClass),   ((d.classVal + ' ' + d.stream).trim()).toUpperCase(), lbl(d.lSubject), (d.subject || '').toUpperCase() ],
+        [ lbl(d.lTime),    (d.time    || '').toUpperCase(), lbl(d.lDate),    (d.date    || '').toUpperCase() ],
+    ];
+    const dRowH  = 5.2;
+    dRows.forEach((row, ri) => {
+        let cx = ML;
+        row.forEach((cell, ci) => {
+            const isBold = ci === 0 || ci === 2;
+            textCell(cell, cx, cy + ri * dRowH, dCols[ci], dRowH, {
+                fontSize: 3.0, bold: isBold, vAlign: 'bottom', padL: 0.8, padR: 0.8, padT: 0.8
+            });
+            if (ci === 1 || ci === 3) {
+                drawLine(cx, cy + (ri + 1) * dRowH - 0.3, cx + dCols[ci], cy + (ri + 1) * dRowH - 0.3, mm(0.18));
+            }
+            cx += dCols[ci];
+        });
     });
-    y = doc.lastAutoTable.finalY + 6;
+    cy += dRows.length * dRowH + 5;
+
+    const stuCols   = [CW/6, CW/6, CW/6, CW/6, CW/6, CW/6];
+    const stuHdrH   = 4.8;
+    const stuRow1H  = 4.2;
+    const stuRow2H  = 4.0;
+    const stuRow3H  = 4.8;
+    const stuLW     = mm(0.22);
+
+    gridCell(d.lIdadi.toUpperCase(), ML, cy, CW, stuHdrH,
+        { fontSize: 3.0, bold: true, align: 'center', vAlign: 'middle' }, false);
+    drawRect(ML, cy, CW, stuHdrH, stuLW);
+    cy += stuHdrH;
+
+    gridCell(d.lSajiliwa.toUpperCase(), ML,          cy, CW/2, stuRow1H, { fontSize: 3.0, bold: true, align: 'center', vAlign: 'middle' }, false);
+    gridCell(d.lFika.toUpperCase(),     ML + CW/2,   cy, CW/2, stuRow1H, { fontSize: 3.0, bold: true, align: 'center', vAlign: 'middle' }, false);
+    drawRect(ML,        cy, CW/2, stuRow1H, stuLW);
+    drawRect(ML + CW/2, cy, CW/2, stuRow1H, stuLW);
+    cy += stuRow1H;
+
+    const hdrs2  = [d.lGirls, d.lBoys, d.lTotal, d.lGirls1, d.lBoys1, d.lTotal1];
+    let cx2 = ML;
+    hdrs2.forEach((h2, i) => {
+        gridCell(h2.toUpperCase(), cx2, cy, stuCols[i], stuRow2H, { fontSize: 3.0, bold: true, align: 'center', vAlign: 'middle' });
+        cx2 += stuCols[i];
+    });
+    cy += stuRow2H;
+
+    const vals   = [d.flReg, d.mlReg, d.stRegt, d.flPr, d.mlPr, d.stPrt];
+    cx2 = ML;
+    vals.forEach((v, i) => {
+        gridCell(v || '', cx2, cy, stuCols[i], stuRow3H, { fontSize: 3.0, align: 'center', vAlign: 'middle' });
+        cx2 += stuCols[i];
+    });
+    cy += stuRow3H + 5;
 
     const compLblW = 50;
-    const compRows = [
+    const compValW = CW - compLblW;
+    const compRowH = 5.2;
+    const compData = [
         [ lbl(d.lUjuzi),     d.sylbsMnObj ],
         [ lbl(d.lLengoKuu),  d.sylbsCmp   ],
         [ lbl(d.lMadaNdogo), d.sylbsSbtp  ],
@@ -1206,124 +1309,111 @@ function buildAndDownloadPdf(filename, onSuccess) {
         [ lbl(d.lNukuu),     d.sylbsMts   ],
         [ lbl(d.lRejea),     d.sylbsRfrs  ],
     ];
-
-    doc.autoTable({
-        startY:     y,
-        margin:     { left: ML, right: MR },
-        tableWidth: CW,
-        theme:      'plain',
-        styles: {
-            ...base,
-            cellPadding: { top: 1.2, bottom: 2, left: 1, right: 1 },
-            lineWidth: 0,
-        },
-        columnStyles: {
-            0: { fontStyle: 'bold', cellWidth: compLblW, valign: 'bottom' },
-            1: { cellWidth: CW - compLblW, valign: 'bottom' },
-        },
-        body: compRows,
-        didDrawCell(data) {
-            if (data.section === 'body' && data.column.index === 1) {
-                doc.setDrawColor(...BLACK);
-                doc.setLineWidth(0.5);
-                doc.setLineDashPattern([], 0);
-                doc.line(
-                    data.cell.x,
-                    data.cell.y + data.cell.height - 0.4,
-                    data.cell.x + data.cell.width,
-                    data.cell.y + data.cell.height - 0.4
-                );
-            }
-        },
+    compData.forEach((row, ri) => {
+        const ry2 = cy + ri * compRowH;
+        textCell(row[0], ML,              ry2, compLblW, compRowH, { fontSize: 3.0, bold: true,  vAlign: 'bottom', padL: 0.8 });
+        textCell(row[1], ML + compLblW,   ry2, compValW, compRowH, { fontSize: 3.0, bold: false, vAlign: 'bottom', padL: 0.8 });
+        drawLine(ML + compLblW, ry2 + compRowH - 0.3, ML + CW, ry2 + compRowH - 0.3, mm(0.18));
     });
-    y = doc.lastAutoTable.finalY + 6;
+    cy += compData.length * compRowH + 5;
 
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9);
-    doc.setTextColor(...BLACK);
-    doc.text(d.lKichwa.toUpperCase(), PW / 2, y + 4, { align: 'center' });
-    y += 7;
+    setFont('bold', 3.2);
+    ctx.fillStyle    = '#000000';
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(d.lKichwa.toUpperCase(), mm(PW / 2), mm(cy + 3));
+    ctx.textAlign    = 'left';
+    cy += 7;
 
-    const tableBottom = PH - MB - REMARKS_BLOCK_H;
-    const availH      = tableBottom - y;
-    const HDR_H       = 10;
-    const rowH        = (availH - HDR_H) / 4;
+    const REMARKS_BLOCK_H = 16;
+    const procBottom      = PH - MB - REMARKS_BLOCK_H;
+    const procH           = procBottom - cy;
+    const procHdrH        = 7.5;
+    const procRowH        = (procH - procHdrH) / 4;
+    const pCols           = [28, 14, 52, 52, CW - 28 - 14 - 52 - 52];
+    const pLW             = mm(0.22);
 
-    const pCW = [28, 14, 52, 52, CW - 28 - 14 - 52 - 52];
+    const procHdrs = [
+        d.lHatua.replace(/:+\s*$/, '').toUpperCase(),
+        d.lMudaDakika.toUpperCase(),
+        d.lMwalimu.toUpperCase(),
+        d.lMwanafunzi.toUpperCase(),
+        d.lAngalia.toUpperCase(),
+    ];
+    let px = ML;
+    procHdrs.forEach((hdr, i) => {
+        gridCell(hdr, px, cy, pCols[i], procHdrH, { fontSize: 3.0, bold: true, align: 'center', vAlign: 'middle' }, false);
+        drawRect(px, cy, pCols[i], procHdrH, pLW);
+        px += pCols[i];
+    });
+    cy += procHdrH;
 
-    doc.autoTable({
-        startY:     y,
-        margin:     { left: ML, right: MR },
-        tableWidth: CW,
-        theme:      'grid',
-        styles: {
-            ...base,
-            fontSize:  8.5,
-            cellPadding: { top: 2.5, bottom: 2.5, left: 2.5, right: 2.5 },
-            valign:   'top',
-            overflow: 'linebreak',
-            lineWidth: 0.5,
-        },
-        headStyles: {
-            ...base,
-            fontSize:  8.5,
-            fontStyle: 'bold',
-            halign:    'center',
-            valign:    'middle',
-            fillColor: WHITE,
-            lineWidth: 0.5,
-        },
-        columnStyles: {
-            0: { cellWidth: pCW[0], fontStyle: 'bold', halign: 'left', valign: 'middle' },
-            1: { cellWidth: pCW[1], halign: 'center' },
-            2: { cellWidth: pCW[2] },
-            3: { cellWidth: pCW[3] },
-            4: { cellWidth: pCW[4] },
-        },
-        head: [[
-            d.lHatua.replace(/:+\s*$/, '').toUpperCase(),
-            d.lMudaDakika.toUpperCase(),
-            d.lMwalimu.toUpperCase(),
-            d.lMwanafunzi.toUpperCase(),
-            d.lAngalia.toUpperCase(),
-        ]],
-        body: [
-            [ (d.lMwanzo     || '').toUpperCase(), d.introCont, d.intro1,   d.intro2,   d.intro3   ],
-            [ (d.lMpya       || '').toUpperCase(), d.newKnow,   d.new1,     d.new2,     d.new3     ],
-            [ (d.lKuimarisha || '').toUpperCase(), d.reinCont,  d.rein1,    d.rein2,    d.rein3    ],
-            [ (d.lTafakari   || '').toUpperCase(), d.refleCont, d.reflect1, d.reflect2, d.reflect3 ],
-        ],
-        didParseCell(data) {
-            if (data.section === 'body') {
-                data.cell.styles.minCellHeight = rowH;
-            }
-        },
+    const procBody = [
+        [ (d.lMwanzo     || '').toUpperCase(), d.introCont, d.intro1,   d.intro2,   d.intro3   ],
+        [ (d.lMpya       || '').toUpperCase(), d.newKnow,   d.new1,     d.new2,     d.new3     ],
+        [ (d.lKuimarisha || '').toUpperCase(), d.reinCont,  d.rein1,    d.rein2,    d.rein3    ],
+        [ (d.lTafakari   || '').toUpperCase(), d.refleCont, d.reflect1, d.reflect2, d.reflect3 ],
+    ];
+    procBody.forEach((row, ri) => {
+        let px2 = ML;
+        row.forEach((cell, ci) => {
+            const isStage  = ci === 0;
+            fillRect(px2, cy + ri * procRowH, pCols[ci], procRowH, '#ffffff');
+            textCell(cell, px2, cy + ri * procRowH, pCols[ci], procRowH, {
+                fontSize: 3.0,
+                bold:     isStage,
+                align:    isStage ? 'left' : 'left',
+                vAlign:   isStage ? 'middle' : 'top',
+                padL:     1.5,
+                padR:     1.5,
+                padT:     1.8,
+            });
+            drawRect(px2, cy + ri * procRowH, pCols[ci], procRowH, pLW);
+            px2 += pCols[ci];
+        });
     });
 
     const remarksY = PH - MB - REMARKS_BLOCK_H + 5;
+    setFont('bold', 3.0);
+    ctx.fillStyle    = '#000000';
+    ctx.textBaseline = 'alphabetic';
+    const rlbl       = lbl(d.lMaoni);
+    ctx.fillText(rlbl, mm(ML), mm(remarksY));
+    const rlblW      = ctx.measureText(rlbl).width / MM2PX + 2;
+    setFont('normal', 3.0);
+    const remarkLines = wrapText(d.remarkComm || '', CW - rlblW);
+    ctx.fillText(remarkLines[0] || '', mm(ML + rlblW), mm(remarksY));
 
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8.5);
-    doc.setTextColor(...BLACK);
+    const imgData = canvas.toDataURL('image/jpeg', 1.0);
 
-    const remarkLabel = lbl(d.lMaoni);
-    doc.text(remarkLabel, ML, remarksY);
+    const pdfDoc = new jsPDF({
+        orientation:      'portrait',
+        unit:             'mm',
+        format:           'a4',
+        compress:         false,
+        putOnlyUsedFonts: false,
+        floatPrecision:   16,
+    });
 
-    const labelW  = doc.getTextWidth(remarkLabel) + 2;
-    const remarkW = CW - labelW;
+    pdfDoc.setProperties({
+        title:    d.title || 'Lesson Plan',
+        subject:  'Lesson Plan Document',
+        author:   d.teacher || '',
+        keywords: 'lesson plan, education, teaching',
+        creator:  'Lesson Plan Generator',
+    });
 
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8.5);
-    const lines = doc.splitTextToSize(d.remarkComm || '', remarkW);
-    doc.text(lines, ML + labelW, remarksY);
+    pdfDoc.addImage(imgData, 'JPEG', 0, 0, 210, 297, '', 'FAST');
 
-    doc.save(`${filename}.pdf`);
+    pdfDoc.save(`${filename}.pdf`);
 
     hidePdfLoader();
     showDownloadSuccessToast(filename);
     markTrackerRecordDownloaded();
     if (typeof onSuccess === 'function') onSuccess();
 }
+
+
 function showDocumentNameModal(defaultName, callback) {
     const existingModal = document.querySelector('.document-name-modal-overlay');
     if (existingModal) existingModal.remove();
