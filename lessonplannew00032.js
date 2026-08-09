@@ -2164,10 +2164,10 @@ function updateContent() {
         "utamaduni, sanaa na michezo","sanaa na michezo",
         "jiografia na mazingira","hisabati","sayansi","maarifa ya jamii","stadi za kazi","uraia na maadili"
     ];
-    const isSwahiliSubject = allowedSubjects.includes(subject.toLowerCase());
+     const isSwahiliSubjectFlag = allowedSubjects.includes(subject.toLowerCase());
     const isContinue = wrdImp1 === "Endelea" || wrdImp1.toLowerCase() === "continue";
 
-    if (isSwahiliSubject) {
+    if (isSwahiliSubjectFlag) {
         const labelMap = {
             "ShuleJina":"Shule","muda-dakika":"Muda (Dak)","andalio":"Andalio la somo",
             "somo":"somo","darasa":"Darasa","ujuzi":"Umahiri Mkuu","lengoKuu":"Umahiri Mahususi",
