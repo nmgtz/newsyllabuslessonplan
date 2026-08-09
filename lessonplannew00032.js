@@ -325,7 +325,15 @@ const TLM_MAP = {
     audio:     { key:'audio',     labelEn:'an audio recording',  labelSw:'rekodi ya sauti',       verbEn:'play',       verbSw:'kuonyesha',   pluralEn:'audio recordings',   pluralSw:'rekodi za sauti'     },
     map:       { key:'map',       labelEn:'a map',               labelSw:'ramani',                verbEn:'display',    verbSw:'kuonyesha',   pluralEn:'maps',               pluralSw:'ramani'              },
     globe:     { key:'globe',     labelEn:'a globe',             labelSw:'globa',                 verbEn:'use',        verbSw:'kutumia',     pluralEn:'globes',             pluralSw:'globa'               },
-    default:   { key:'default',   labelEn:'teaching materials',  labelSw:'vifaa vya kufundishia', verbEn:'use',        verbSw:'kutumia',     pluralEn:'teaching materials', pluralSw:'vifaa vya kufundishia'}
+    chalkboard:  { key:'chalkboard',  labelEn:'the chalkboard',       labelSw:'ubaoni',                verbEn:'use',   verbSw:'kutumia', pluralEn:'chalkboard illustrations', pluralSw:'michoro ubaoni'      },
+projector:   { key:'projector',   labelEn:'a projector',          labelSw:'projekta',              verbEn:'use',   verbSw:'kutumia', pluralEn:'projector slides',         pluralSw:'slaidi za projekta'  },
+computer:    { key:'computer',    labelEn:'a computer',           labelSw:'kompyuta',              verbEn:'use',   verbSw:'kutumia', pluralEn:'computer resources',       pluralSw:'rasilimali za kompyuta' },
+newspaper:   { key:'newspaper',   labelEn:'a newspaper article',  labelSw:'habari ya gazeti',      verbEn:'use',   verbSw:'kutumia', pluralEn:'newspaper articles',       pluralSw:'habari za magazeti'  },
+laboratory:  { key:'laboratory',  labelEn:'laboratory equipment', labelSw:'vifaa vya maabara',     verbEn:'use',   verbSw:'kutumia', pluralEn:'laboratory equipment',     pluralSw:'vifaa vya maabara'   },
+measuring:   { key:'measuring',   labelEn:'measuring tools',      labelSw:'vifaa vya kupimia',     verbEn:'use',   verbSw:'kutumia', pluralEn:'measuring tools',          pluralSw:'vifaa vya kupimia'   },
+'number line': { key:'numberline', labelEn:'a number line',       labelSw:'mstari wa nambari',     verbEn:'use',   verbSw:'kutumia', pluralEn:'number lines',             pluralSw:'mistari ya nambari'  },
+    default:   { key:'default',   labelEn:'teaching materials',  labelSw:'vifaa vya kufundishia', verbEn:'use',        verbSw:'kutumia',     pluralEn:'teaching materials', pluralSw:'vifaa vya kufundishia'},
+    
 };
 
 /**
@@ -575,6 +583,146 @@ function getContextualConnector(tlmKey, conceptType, isSwahili) {
             solutions:          ['about solutions to', 'focused on ways to address'],
             generic:            ['about', 'focused on', 'related to'],
         },
+        chalkboard: {
+    meaning: ['illustrating on the chalkboard', 'explaining using'],
+    importance: ['demonstrating on the chalkboard the importance of', 'explaining using'],
+    meaning_importance: ['explaining the meaning and importance of using'],
+    effects: ['illustrating the effects of', 'showing on the chalkboard'],
+    causes: ['illustrating the causes of', 'showing on the chalkboard'],
+    advantages: ['listing on the chalkboard the advantages of'],
+    disadvantages: ['listing on the chalkboard the disadvantages of'],
+    adv_disadv: ['comparing on the chalkboard the advantages and disadvantages of'],
+    types: ['classifying on the chalkboard the types of'],
+    characteristics: ['listing on the chalkboard the characteristics of'],
+    steps: ['outlining on the chalkboard the steps of'],
+    examples: ['listing examples of', 'using'],
+    definition: ['defining', 'using'],
+    uses: ['listing on the chalkboard the uses of'],
+    functions: ['listing on the chalkboard the functions of'],
+    components: ['listing on the chalkboard the components of'],
+    solutions: ['listing on the chalkboard solutions to'],
+    generic: ['related to', 'about'],
+},
+projector: {
+    meaning: ['displaying via projector', 'showing using'],
+    importance: ['demonstrating via projector the importance of'],
+    meaning_importance: ['explaining the meaning and importance of using'],
+    effects: ['showing via projector the effects of'],
+    causes: ['showing via projector the causes of'],
+    advantages: ['displaying the advantages of', 'using'],
+    disadvantages: ['displaying the disadvantages of', 'using'],
+    adv_disadv: ['comparing the advantages and disadvantages of', 'using'],
+    types: ['displaying the types of', 'using'],
+    characteristics: ['displaying the characteristics of', 'using'],
+    steps: ['demonstrating the steps of', 'using'],
+    examples: ['displaying examples of', 'using'],
+    definition: ['defining', 'using'],
+    uses: ['displaying the uses of', 'using'],
+    functions: ['displaying the functions of', 'using'],
+    components: ['displaying the components of', 'using'],
+    solutions: ['displaying solutions to', 'using'],
+    generic: ['related to', 'using'],
+},
+computer: {
+    meaning: ['explaining using', 'demonstrating with'],
+    importance: ['demonstrating with the importance of'],
+    meaning_importance: ['explaining with the meaning and importance of'],
+    effects: ['illustrating with the effects of'],
+    causes: ['illustrating with the causes of'],
+    advantages: ['listing with the advantages of'],
+    disadvantages: ['listing with the disadvantages of'],
+    adv_disadv: ['comparing with the advantages and disadvantages of'],
+    types: ['classifying with the types of'],
+    characteristics: ['listing with the characteristics of'],
+    steps: ['demonstrating with the steps of'],
+    examples: ['showing examples of', 'using'],
+    definition: ['defining', 'using'],
+    uses: ['listing with the uses of'],
+    functions: ['listing with the functions of'],
+    components: ['listing with the components of'],
+    solutions: ['listing with solutions to'],
+    generic: ['related to', 'using'],
+},
+newspaper: {
+    meaning: ['explaining the meaning of', 'reporting on'],
+    importance: ['discussing the importance of', 'reporting on'],
+    meaning_importance: ['explaining the meaning and importance of'],
+    effects: ['reporting on the effects of'],
+    causes: ['reporting on the causes of'],
+    advantages: ['discussing the advantages of'],
+    disadvantages: ['discussing the disadvantages of'],
+    adv_disadv: ['discussing the advantages and disadvantages of'],
+    types: ['describing the types of'],
+    characteristics: ['describing the characteristics of'],
+    steps: ['explaining the steps of'],
+    examples: ['reporting examples of'],
+    definition: ['defining', 'explaining'],
+    uses: ['discussing the uses of'],
+    functions: ['discussing the functions of'],
+    components: ['describing the components of'],
+    solutions: ['discussing solutions to'],
+    generic: ['about', 'reporting on'],
+},
+laboratory: {
+    meaning: ['demonstrating', 'illustrating using'],
+    importance: ['demonstrating the importance of', 'using'],
+    meaning_importance: ['demonstrating the meaning and importance of'],
+    effects: ['demonstrating the effects of'],
+    causes: ['demonstrating the causes of'],
+    advantages: ['demonstrating the advantages of'],
+    disadvantages: ['demonstrating the disadvantages of'],
+    adv_disadv: ['demonstrating the advantages and disadvantages of'],
+    types: ['demonstrating the types of'],
+    characteristics: ['demonstrating the characteristics of'],
+    steps: ['demonstrating the steps of'],
+    examples: ['demonstrating examples of'],
+    definition: ['demonstrating the concept of'],
+    uses: ['demonstrating the uses of'],
+    functions: ['demonstrating the functions of'],
+    components: ['demonstrating the components of'],
+    solutions: ['demonstrating solutions to'],
+    generic: ['related to', 'demonstrating'],
+},
+measuring: {
+    meaning: ['using to measure', 'demonstrating using'],
+    importance: ['demonstrating the importance of', 'using to measure'],
+    meaning_importance: ['demonstrating the meaning and importance of'],
+    effects: ['measuring the effects of'],
+    causes: ['measuring factors related to'],
+    advantages: ['demonstrating the advantages of'],
+    disadvantages: ['demonstrating the disadvantages of'],
+    adv_disadv: ['demonstrating the advantages and disadvantages of'],
+    types: ['measuring the types of'],
+    characteristics: ['measuring the characteristics of'],
+    steps: ['measuring the steps of'],
+    examples: ['measuring examples of'],
+    definition: ['demonstrating the concept of'],
+    uses: ['demonstrating the uses of'],
+    functions: ['demonstrating the functions of'],
+    components: ['measuring the components of'],
+    solutions: ['measuring approaches to'],
+    generic: ['related to', 'measuring'],
+},
+numberline: {
+    meaning: ['illustrating on the number line', 'demonstrating using'],
+    importance: ['demonstrating the importance of using'],
+    meaning_importance: ['demonstrating the meaning and importance of'],
+    effects: ['illustrating the effects of'],
+    causes: ['illustrating the causes of'],
+    advantages: ['demonstrating the advantages of'],
+    disadvantages: ['demonstrating the disadvantages of'],
+    adv_disadv: ['demonstrating the advantages and disadvantages of'],
+    types: ['illustrating the types of'],
+    characteristics: ['illustrating the characteristics of'],
+    steps: ['illustrating the steps of'],
+    examples: ['illustrating examples of'],
+    definition: ['illustrating the concept of'],
+    uses: ['demonstrating the uses of'],
+    functions: ['demonstrating the functions of'],
+    components: ['illustrating the components of'],
+    solutions: ['illustrating solutions to'],
+    generic: ['related to', 'illustrating'],
+},
         default: {
             generic:            ['related to', 'about', 'on the topic of'],
         }
@@ -662,6 +810,146 @@ function getContextualConnector(tlmKey, conceptType, isSwahili) {
             solutions:          ['unaoonyesha suluhu za', 'unaobainisha njia za kutatua'],
             generic:            ['kuhusu', 'unaohusiana na'],
         },
+        chalkboard: {
+    meaning: ['inayoonyeshwa ubaoni', 'inayoelezwa kwa kutumia'],
+    importance: ['inayoonyesha umuhimu wa kutumia'],
+    meaning_importance: ['inayoonyesha maana na umuhimu wa kutumia'],
+    effects: ['inayoonyesha athara za', 'ubaoni'],
+    causes: ['inayoonyesha sababu za', 'ubaoni'],
+    advantages: ['inayoorodhesha faida za', 'ubaoni'],
+    disadvantages: ['inayoorodhesha hasara za', 'ubaoni'],
+    adv_disadv: ['inayolinganisha faida na hasara za'],
+    types: ['inayoainisha aina za', 'ubaoni'],
+    characteristics: ['inayoorodhesha sifa za', 'ubaoni'],
+    steps: ['inayoorodhesha hatua za', 'ubaoni'],
+    examples: ['inayotoa mifano ya'],
+    definition: ['inayofafanua', 'kwa kutumia'],
+    uses: ['inayoorodhesha matumizi ya'],
+    functions: ['inayoorodhesha kazi za'],
+    components: ['inayoorodhesha sehemu za'],
+    solutions: ['inayoorodhesha suluhu za'],
+    generic: ['kuhusu', 'inayohusiana na'],
+},
+projector: {
+    meaning: ['inayoonyeshwa kwa projekta', 'inayoelezwa kwa kutumia'],
+    importance: ['inayoonyesha umuhimu wa kutumia'],
+    meaning_importance: ['inayoonyesha maana na umuhimu wa kutumia'],
+    effects: ['inayoonyesha athara za'],
+    causes: ['inayoonyesha sababu za'],
+    advantages: ['inayoonyesha faida za', 'kwa kutumia'],
+    disadvantages: ['inayoonyesha hasara za', 'kwa kutumia'],
+    adv_disadv: ['inayolinganisha faida na hasara za'],
+    types: ['inayoonyesha aina za', 'kwa kutumia'],
+    characteristics: ['inayoonyesha sifa za', 'kwa kutumia'],
+    steps: ['inayoonyesha hatua za', 'kwa kutumia'],
+    examples: ['inayoonyesha mifano ya'],
+    definition: ['inayofafanua', 'kwa kutumia'],
+    uses: ['inayoonyesha matumizi ya'],
+    functions: ['inayoonyesha kazi za'],
+    components: ['inayoonyesha sehemu za'],
+    solutions: ['inayoonyesha suluhu za'],
+    generic: ['kuhusu', 'kwa kutumia'],
+},
+computer: {
+    meaning: ['inayoelezwa kwa kutumia', 'inayoonyeshwa kwa kutumia'],
+    importance: ['inayoonyesha umuhimu wa kutumia'],
+    meaning_importance: ['inayoonyesha maana na umuhimu wa kutumia'],
+    effects: ['inayoonyesha athara za', 'kwa kutumia'],
+    causes: ['inayoonyesha sababu za', 'kwa kutumia'],
+    advantages: ['inayoorodhesha faida za', 'kwa kutumia'],
+    disadvantages: ['inayoorodhesha hasara za', 'kwa kutumia'],
+    adv_disadv: ['inayolinganisha faida na hasara za'],
+    types: ['inayoainisha aina za', 'kwa kutumia'],
+    characteristics: ['inayoorodhesha sifa za', 'kwa kutumia'],
+    steps: ['inayoorodhesha hatua za', 'kwa kutumia'],
+    examples: ['inayotoa mifano ya'],
+    definition: ['inayofafanua', 'kwa kutumia'],
+    uses: ['inayoorodhesha matumizi ya'],
+    functions: ['inayoorodhesha kazi za'],
+    components: ['inayoorodhesha sehemu za'],
+    solutions: ['inayoorodhesha suluhu za'],
+    generic: ['kuhusu', 'kwa kutumia'],
+},
+newspaper: {
+    meaning: ['inayoeleza maana ya', 'kutoka gazetini'],
+    importance: ['inayoonyesha umuhimu wa'],
+    meaning_importance: ['inayoeleza maana na umuhimu wa'],
+    effects: ['inayoripoti athara za'],
+    causes: ['inayoripoti sababu za'],
+    advantages: ['inayojadili faida za'],
+    disadvantages: ['inayojadili hasara za'],
+    adv_disadv: ['inayojadili faida na hasara za'],
+    types: ['inayoeleza aina za'],
+    characteristics: ['inayoeleza sifa za'],
+    steps: ['inayoeleza hatua za'],
+    examples: ['inayoripoti mifano ya'],
+    definition: ['inayofafanua'],
+    uses: ['inayojadili matumizi ya'],
+    functions: ['inayojadili kazi za'],
+    components: ['inayoeleza sehemu za'],
+    solutions: ['inayojadili suluhu za'],
+    generic: ['kuhusu', 'inayoripoti'],
+},
+laboratory: {
+    meaning: ['inayoonyesha', 'kwa kutumia'],
+    importance: ['inayoonyesha umuhimu wa kutumia'],
+    meaning_importance: ['inayoonyesha maana na umuhimu wa'],
+    effects: ['inayoonyesha athara za'],
+    causes: ['inayoonyesha sababu za'],
+    advantages: ['inayoonyesha faida za'],
+    disadvantages: ['inayoonyesha hasara za'],
+    adv_disadv: ['inayoonyesha faida na hasara za'],
+    types: ['inayoonyesha aina za'],
+    characteristics: ['inayoonyesha sifa za'],
+    steps: ['inayoonyesha hatua za'],
+    examples: ['inayoonyesha mifano ya'],
+    definition: ['inayoonyesha dhana ya'],
+    uses: ['inayoonyesha matumizi ya'],
+    functions: ['inayoonyesha kazi za'],
+    components: ['inayoonyesha sehemu za'],
+    solutions: ['inayoonyesha suluhu za'],
+    generic: ['kuhusu', 'inayoonyesha'],
+},
+measuring: {
+    meaning: ['inayopima', 'kwa kutumia'],
+    importance: ['inayoonyesha umuhimu wa kupima'],
+    meaning_importance: ['inayoonyesha maana na umuhimu wa'],
+    effects: ['inayopima athara za'],
+    causes: ['inayopima sababu za'],
+    advantages: ['inayoonyesha faida za'],
+    disadvantages: ['inayoonyesha hasara za'],
+    adv_disadv: ['inayoonyesha faida na hasara za'],
+    types: ['inayopima aina za'],
+    characteristics: ['inayopima sifa za'],
+    steps: ['inayopima hatua za'],
+    examples: ['inayopima mifano ya'],
+    definition: ['inayoonyesha dhana ya'],
+    uses: ['inayoonyesha matumizi ya'],
+    functions: ['inayoonyesha kazi za'],
+    components: ['inayopima sehemu za'],
+    solutions: ['inayopima njia za kutatua'],
+    generic: ['kuhusu', 'inayopima'],
+},
+numberline: {
+    meaning: ['unaoonyesha kwenye mstari wa nambari'],
+    importance: ['unaoonyesha umuhimu wa kutumia'],
+    meaning_importance: ['unaoonyesha maana na umuhimu wa'],
+    effects: ['unaoonyesha athara za'],
+    causes: ['unaoonyesha sababu za'],
+    advantages: ['unaoonyesha faida za'],
+    disadvantages: ['unaoonyesha hasara za'],
+    adv_disadv: ['unaoonyesha faida na hasara za'],
+    types: ['unaoonyesha aina za'],
+    characteristics: ['unaoonyesha sifa za'],
+    steps: ['unaoonyesha hatua za'],
+    examples: ['unaoonyesha mifano ya'],
+    definition: ['unaoonyesha dhana ya'],
+    uses: ['unaoonyesha matumizi ya'],
+    functions: ['unaoonyesha kazi za'],
+    components: ['unaoonyesha sehemu za'],
+    solutions: ['unaoonyesha suluhu za'],
+    generic: ['kuhusu', 'unaoonyesha'],
+},
         default: {
             generic: ['kuhusu', 'zinazohusiana na', 'inayohusiana na'],
         }
@@ -681,20 +969,21 @@ function getContextualConnector(tlmKey, conceptType, isSwahili) {
  */
 function buildContextualLabel(tlmDescriptor, conceptType, specificLesson, isSwahili) {
     const connector = getContextualConnector(tlmDescriptor.key, conceptType, isSwahili);
-    if (isSwahili) {
-        const base = tlmDescriptor.labelSw;
-        return `${base} ${connector} ${specificLesson}`;
-    } else {
-        const base = tlmDescriptor.labelEn;
-        return `${base} ${connector} ${specificLesson}`;
-    }
+    const base = isSwahili
+        ? (tlmDescriptor.isPlural ? tlmDescriptor.pluralSw : tlmDescriptor.labelSw)
+        : (tlmDescriptor.isPlural ? tlmDescriptor.pluralEn : tlmDescriptor.labelEn);
+    return `${base} ${connector} ${specificLesson}`;
 }
+
+
 
 function parseTLM(tlmString) {
     if (!tlmString || tlmString.trim() === '') return [TLM_MAP.default];
     const lower = tlmString.toLowerCase();
     const found = [];
-    const priority = ['video','clip','flashcard','card','picture','photo','diagram','chart','graph','poster','model','specimen','object','worksheet','textbook','audio','map','globe'];
+    const priority = ['video','clip','flashcard','card','picture','photo','diagram','chart','graph','poster',
+  'model','specimen','object','worksheet','textbook','audio','map','globe',
+  'chalkboard','projector','computer','newspaper','laboratory','measuring','number line'];
     for (const key of priority) {
         if (lower.includes(key)) {
             const descriptor = TLM_MAP[key];
@@ -706,11 +995,13 @@ function parseTLM(tlmString) {
 
 function getStimulusFromTLM(tlmString, conceptType, specificLesson, isSwahili) {
     const options = parseTLM(tlmString);
-    const chosen  = pick(options);
+    const chosen  = options[0]; // first material typed, ignore the rest
     const contextualLabel = buildContextualLabel(chosen, conceptType, specificLesson, isSwahili);
     return {
-        label:          contextualLabel,          // full contextual phrase e.g. "a video demonstrating importance of biology"
-        baseLabel:      isSwahili ? chosen.labelSw : chosen.labelEn,  // plain label e.g. "a video clip"
+        label:          contextualLabel,
+        baseLabel:      isSwahili
+            ? (chosen.isPlural ? chosen.pluralSw : chosen.labelSw)
+            : (chosen.isPlural ? chosen.pluralEn : chosen.labelEn.replace(/^an?\s+/i, '')),
         verb:           isSwahili ? chosen.verbSw  : chosen.verbEn,
         plural:         isSwahili ? chosen.pluralSw : chosen.pluralEn,
         key:            chosen.key,
@@ -718,7 +1009,15 @@ function getStimulusFromTLM(tlmString, conceptType, specificLesson, isSwahili) {
     };
 }
 
-
+function buildTLMResourcesPhrase(tlmString, specificLesson, isSwahili) {
+    if (!specificLesson || specificLesson.trim() === '') return tlmString;
+    const activity = parseActivity(specificLesson);
+    const options = parseTLM(tlmString);
+    if (!options.length) return tlmString;
+    return capitalizeFirst(
+        buildContextualLabel(options[0], activity.conceptType, activity.original, isSwahili)
+    );
+}
 
 function buildEnglishQuestions(activity, stimulus) {
     const { conceptType, coreSubject, original } = activity;
@@ -1178,14 +1477,12 @@ function buildEnglishAssessment(conceptType, coreSubject, original, stage) {
     const data = EN_ASSESS_DATA[key];
     const subjectText = (key === 'generic') ? original : coreSubject;
     const object = data.object.replace('{S}', subjectText);
-    const seed = activitySeed(key, stage, subjectText);
-    const options = [0, 1, 2].map(i => {
-        const template = EN_TEMPLATES[(seed + i * 3) % EN_TEMPLATES.length];
-        const verb = data.verbs[(seed + i) % data.verbs.length];
-        const mod = (stage === 'realization') ? EN_REALIZATION_MODS[(seed + i) % EN_REALIZATION_MODS.length] : '';
-        return template(verb, object, data.plural, mod);
-    });
-    return pick(options);
+
+    const template = pick(EN_TEMPLATES);
+    const verb = pick(data.verbs);
+    const mod = (stage === 'realization') ? pick(EN_REALIZATION_MODS) : '';
+
+    return template(verb, object, data.plural, mod);
 }
 
 const SW_ASSESS_DATA = {
@@ -1226,14 +1523,12 @@ function buildSwahiliAssessment(conceptType, coreSubject, original, stage) {
     const data = SW_ASSESS_DATA[key];
     const subjectText = (key === 'generic') ? original : coreSubject;
     const object = data.object.replace('{S}', subjectText);
-    const seed = activitySeed(key, stage, subjectText);
-    const options = [0, 1, 2].map(i => {
-        const template = SW_TEMPLATES[(seed + i * 3) % SW_TEMPLATES.length];
-        const verb = data.verbs[(seed + i) % data.verbs.length];
-        const mod = (stage === 'realization') ? SW_REALIZATION_MODS[(seed + i) % SW_REALIZATION_MODS.length] : '';
-        return template(verb, object, mod);
-    });
-    return pick(options);
+
+    const template = pick(SW_TEMPLATES);
+    const verb = pick(data.verbs);
+    const mod = (stage === 'realization') ? pick(SW_REALIZATION_MODS) : '';
+
+    return template(verb, object, mod);
 }
 
 
@@ -1848,7 +2143,7 @@ function updateContent() {
     if (subStreams !== "none") streams.innerText = subStreams;
     const dateOption = document.getElementById('dateOption').value;
     lessonDate.innerText = dateOption === 'notset' ? '' : subDate;
-    sylbsMts.innerText   = tlmaterials;
+    sylbsMts.innerText   = buildTLMResourcesPhrase(tlmaterials, specificLesson, isSwahiliSubject);
     flReg.innerText  = femaleReg  || "";
     mlReg.innerText  = maleReg    || "";
     flPr.innerText   = femalePres || "";
