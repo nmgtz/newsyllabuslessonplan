@@ -2143,7 +2143,7 @@ function updateContent() {
     if (subStreams !== "none") streams.innerText = subStreams;
     const dateOption = document.getElementById('dateOption').value;
     lessonDate.innerText = dateOption === 'notset' ? '' : subDate;
-    sylbsMts.innerText   = buildTLMResourcesPhrase(tlmaterials, specificLesson, isSwahiliSubject);
+    sylbsMts.innerText   = buildTLMResourcesPhrase(tlmaterials, specificLesson, isSwahiliSubjectFlag);
     flReg.innerText  = femaleReg  || "";
     mlReg.innerText  = maleReg    || "";
     flPr.innerText   = femalePres || "";
